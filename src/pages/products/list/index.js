@@ -1,41 +1,81 @@
-import ProductForm from "../../../components/product-form";
+import DoubleSlider from "../../../components/double-slider"
+import SortableTable from "../../../components/sortable-table"
+
+import header from "./product-list-header"
 
 export default class Page {
-  element;
-  subElements = {};
-  components = {};
+
+  components = {}
+  subElements = {}
 
   async render() {
-    const element = document.createElement('div');
+    this.renderElement()
+    this.renderSubelements()
+    this.renderComponents()
 
-    element.innerHTML = `
-      <div>
-        <h1>List page</h1>
-      </div>`;
+    this.subElements.doubleSlider.append(this.components.doubleSlider.element)
+    this.subElements.productsContainer.append(this.components.sortableTable.element)
 
-    this.element = element.firstElementChild;
-
-    this.initComponents();
-    await this.renderComponents();
-
-    return this.element;
+    return this.element
   }
 
-  initComponents() {
-    const productId = '101-planset-lenovo-yt3-x90l-64-gb-3g-lte-cernyj';
-
-    this.components.productFrom = new ProductForm(productId);
+  renderElement() {
+    this.element = document.createElement('div')
+    this.element.className = 'products-list'
+    this.element.innerHTML = this.elementInnerHtml
   }
+
+  renderSubelements() {
+    const elements = this.element.querySelectorAll('[data-element]')
+   
+    for (const subElement of elements) {
+      this.subElements[subElement.dataset.element] = subElement
+    }
+  } 
 
   async renderComponents() {
-    const element = await this.components.productFrom.render();
 
-    this.element.append(element);
-  }
+    this.components.doubleSlider = new DoubleSlider({
+      min: 0, 
+      max: 4000, 
+      formatValue: data => "$" + data
+    })
 
-  destroy() {
-    for (const component of Object.values(this.components)) {
-      component.destroy();
-    }
+    this.components.sortableTable = new SortableTable(
+        header, {
+          url: 'api/rest/products?_embed=subcategory.category'
+        }
+    )
+    //await this.updateSortableTable(from, to)
+
+}
+
+  get elementInnerHtml() {
+    return `<div class="content__top-panel">
+              <h1 class="page-title">Товары</h1>
+              <a href="/products/add" data-element="buttonAdd" class="button-primary">Добавить товар</a>
+            </div>
+            <div class="content-box content-box_small">
+              <form class="form-inline">
+                <div class="form-group">
+                  <label class="form-label">Сортировать по:</label>
+                  <input type="text" data-element="filterName" class="form-control" placeholder="Название товара">
+                </div>
+                <div class="form-group" data-element="sliderContainer">
+                  <label class="form-label">Цена:</label>
+                  <div class="range-slider" data-element="doubleSlider"></div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Статус:</label>
+                  <select class="form-control" data-element="filterStatus">
+                    <option value="" selected="">Любой</option>
+                    <option value="1">Активный</option>
+                    <option value="0">Неактивный</option>
+                  </select>
+                </div>
+              </form>
+            </div>
+            <div data-element="productsContainer" class="products-list__container">
+            </div>`
   }
 }

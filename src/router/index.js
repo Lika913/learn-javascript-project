@@ -37,8 +37,9 @@ export default class Router {
 
     for (let route of this.routes) {
       match = strippedPath.match(route.pattern);
-
+      
       if (match) {
+        
         this.page = await this.changePage(route.path, match);
         break;
       }
