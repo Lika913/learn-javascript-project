@@ -95,6 +95,7 @@ export default class SortableTable {
     const height = document.documentElement.clientHeight + 100
     
     if (tableBottom < height && !this.alreadyLoading && !this.isSortLocally) {
+      
       this.alreadyLoading = true
 
       this.start += this.step

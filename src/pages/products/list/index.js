@@ -7,6 +7,7 @@ export default class Page {
 
   components = {}
   subElements = {}
+  params = {}
 
   async render() {
     this.renderElement()
@@ -15,6 +16,10 @@ export default class Page {
 
     this.subElements.doubleSlider.append(this.components.doubleSlider.element)
     this.subElements.productsContainer.append(this.components.sortableTable.element)
+
+    this.subElements.filterName.addEventListener("input", this.inputName)
+    this.subElements.filterStatus.addEventListener("change", this.changeStatus)
+    this.components.doubleSlider.element.addEventListener("range-select", this.changeRange)
 
     return this.element
   }
@@ -46,14 +51,38 @@ export default class Page {
           url: 'api/rest/products?_embed=subcategory.category'
         }
     )
-    //await this.updateSortableTable(from, to)
+}
 
+inputName = event => {
+  this.params.title_like = event.target.value
+  this.updateSortableTable()
+}
+
+changeStatus = event => {
+  this.params.status = event.target.value
+  this.updateSortableTable()
+}
+
+changeRange = event => {
+  this.params.price_gte = event.detail.from
+  this.params.price_lte = event.detail.to
+  this.updateSortableTable()
+}
+
+async updateSortableTable() {
+  for (const [keyParam, valueParam] of Object.entries(this.params)) {
+    //чтобы при прокрутке в запросе оставались текущие параметры
+    this.components.sortableTable.url.searchParams.set(keyParam, valueParam)
+  }
+  
+  const tableData = await this.components.sortableTable.loadData()
+  this.components.sortableTable.update(tableData)
 }
 
   get elementInnerHtml() {
     return `<div class="content__top-panel">
               <h1 class="page-title">Товары</h1>
-              <a href="/products/add" data-element="buttonAdd" class="button-primary">Добавить товар</a>
+              <a href="/products/add" class="button-primary">Добавить товар</a>
             </div>
             <div class="content-box content-box_small">
               <form class="form-inline">
@@ -77,5 +106,23 @@ export default class Page {
             </div>
             <div data-element="productsContainer" class="products-list__container">
             </div>`
+  }
+
+  destroy() {
+    this.remove()
+
+    for (const component of Object.values(this.components)) {
+        component.destroy()
+    }
+    
+    this.element = null
+    this.subElements = {}
+    this.params = {}
+  }
+
+  remove() {
+      if (this.element) {
+        this.element.remove()
+      }
   }
 }

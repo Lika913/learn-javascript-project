@@ -5,7 +5,7 @@
   <title>Админка для магазина</title>
   <link rel="apple-touch-icon-precomposed" href="/assets/favicon/apple-touch-icon-precomposed.png">
   <link rel="icon" href="/assets/favicon/favicon.png">
-  <link rel="stylesheet" href="styles/all.css">
+  <link rel="stylesheet" href="../styles/all.css">
 </head>
 
 <body>
@@ -54,6 +54,9 @@
   </section>
 </main>
 
-<script type="module" src="./index.js"></script>
+<script>
+  const sidebar_toggler = document.body.querySelector(".sidebar__toggler")
+  sidebar_toggler.addEventListener("click", () => document.body.classList.toggle("is-collapsed-sidebar"))
+</script>
 
 </body>
