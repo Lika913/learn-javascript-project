@@ -1,4 +1,4 @@
-export default class SortableList {
+export default class SortableList { // компонент, выводящий список, элементы которого пользователь может менять местами при помощи мыши
 
   ABOVE = "above"
   BELOW = "below"
