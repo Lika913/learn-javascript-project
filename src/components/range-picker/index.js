@@ -1,5 +1,5 @@
-export default class RangePicker {
-
+export default class RangePicker { // компонент, предоставляющий собой календарь, при выборе дат на котором 
+                                   // вызывается кастомное событие, на которое можно подписаться из других мест
   constructor({from, to} = {}) {
 
       if (!from || !to || from > to) {
